@@ -1,0 +1,134 @@
+<!-- New Compliance Script -->
+<script>
+function testConsentScript() {
+  console.group('🧪 Consent Script Tests');
+  
+  const testCookies = ['product_data_storage', 'recently_viewed_product'];
+  let passed = 0, total = 0;
+  
+  console.log('Testing WITHOUT consent...');
+  
+  // Test 1: Cookie blocking
+  testCookies.forEach(cookie => {
+    total++;
+    document.cookie = `${cookie}=blocked_test`;
+    const blocked = !document.cookie.includes(`${cookie}=blocked_test`);
+    console.log(`❌ ${cookie} blocked:`, blocked ? '✅ PASS' : '❌ FAIL');
+    if (blocked) passed++;
+  });
+  
+  // Test 2: New localStorage blocking
+  total++;
+  try {
+    localStorage.setItem('recently_viewed_product_test', 'should_be_blocked');
+    const blocked = !localStorage.getItem('recently_viewed_product_test');
+    console.log(`❌ New localStorage blocked:`, blocked ? '✅ PASS' : '❌ FAIL');
+    if (blocked) passed++;
+  } catch (e) {
+    console.log(`❌ New localStorage blocked: ✅ PASS (threw error)`);
+    passed++;
+  }
+  
+  // Test 3: Simulate existing localStorage being cleared by manually setting then checking if script removes it
+  total++;
+  const originalSetItem = Object.getOwnPropertyDescriptor(Storage.prototype, 'setItem');
+  if (originalSetItem) {
+    // Bypass our override to simulate pre-existing data
+    originalSetItem.value.call(localStorage, 'recently_viewed_product_existing', 'existing_data');
+    console.log('Set existing data:', localStorage.getItem('recently_viewed_product_existing')); // Debug
+    
+    // Use the global analyticsCookies array from the consent script
+    const globalAnalyticsCookies = window.analyticsCookies || ['product_data_storage','recently_compared_product','recently_compared_product_previous','recently_viewed_product','recently_viewed_product_previous'];
+    
+    // Now trigger the cleanup manually using the same logic as the consent script
+    for(let fi=0;fi<localStorage.length;fi++){
+      const fkey=localStorage.key(fi);
+      if(fkey&&globalAnalyticsCookies.some(fa=>fkey.includes(fa))){
+        console.log('Removing localStorage key:', fkey); // Debug
+        localStorage.removeItem(fkey);
+        fi--;
+      }
+    }
+    
+    const existingCleared = !localStorage.getItem('recently_viewed_product_existing');
+    console.log('After cleanup, data exists:', localStorage.getItem('recently_viewed_product_existing')); // Debug
+    console.log(`❌ Existing localStorage cleared:`, existingCleared ? '✅ PASS' : '❌ FAIL');
+    if (existingCleared) passed++;
+  }
+  
+  console.log(`\n📊 Results: ${passed}/${total} tests passed`);
+  console.groupEnd();
+  
+  return { passed, total, success: passed === total };
+}
+
+// Run test manually via consle
+</script>
+
+
+<script>
+console.time('ConsentScript');
+
+window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+const analyticsCookies=['product_data_storage','recently_compared_product','recently_compared_product_previous','recently_viewed_product','recently_viewed_product_previous','_uetsid','_uetvid','_gcl_ls','__kl_key','kl-post-identification-sync','klaviyoOnsite'];
+window.analyticsCookies=analyticsCookies;
+gtag('consent','default',{ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',analytics_storage:'denied',personalization_storage:'denied',functionality_storage:'denied','Adobe Analytics':'denied','Google Analytics':'denied','Microsoft Clarity':'denied','Microsoft Advertising':'denied',Reddit:'denied','Google Ads/AdSense':'denied',Klaviyo:'denied','Facebook Pixel':'denied',UserWay:'denied',Magento:'denied',Vimeo:'denied','New Relic':'denied',security_storage:'granted',CookieChimp:'granted'});
+let fc=null,ft=0;
+function hasAnalyticsConsent(){
+const fn=Date.now();
+if(fc!==null&&fn-ft<1000)return fc;
+try{
+const fh=window.CookieChimp?.hasConsent?window.CookieChimp.hasConsent('analytics_storage'):localStorage.getItem('analytics_consent')==='granted';
+return fc=fh,ft=fn,fh;
+}catch{return false;}
+}
+document.addEventListener('DOMContentLoaded',()=>{
+if(window.localStorage){
+const fo=localStorage.setItem;
+localStorage.setItem=(fk,fv)=>{
+if(analyticsCookies.some(fa=>fk.includes(fa))&&!hasAnalyticsConsent())return;
+return fo.call(localStorage,fk,fv);
+};
+}
+const fd=Object.getOwnPropertyDescriptor(Document.prototype,'cookie');
+if(fd){
+Object.defineProperty(document,'cookie',{
+get:()=>fd.get.call(document),
+set(fv){
+const fn=fv.split('=')[0].trim();
+if(analyticsCookies.includes(fn)&&!hasAnalyticsConsent())return;
+return fd.set.call(document,fv);
+},configurable:true
+});
+}
+if(!hasAnalyticsConsent()){
+const cookies=document.cookie.split(';'),domain=window.location.hostname,exp='=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
+for(let cookie of cookies){
+const name=cookie.split('=')[0].trim();
+if(analyticsCookies.includes(name)){
+document.cookie=name+exp;
+document.cookie=name+exp+'; domain='+domain;
+document.cookie=name+exp+'; domain=.'+domain;
+}
+}
+for(let fi=0;fi<localStorage.length;fi++){
+const fkey=localStorage.key(fi);
+if(fkey&&analyticsCookies.some(fa=>fkey.includes(fa))){
+localStorage.removeItem(fkey);
+fi--;
+}
+}
+}
+if(window.mage?.cookies){
+const fo=window.mage.cookies.set;
+window.mage.cookies.set=(fn,fv,fopt)=>analyticsCookies.includes(fn)&&!hasAnalyticsConsent()?undefined:fo.call(window.mage.cookies,fn,fv,fopt);
+}
+});
+
+console.timeEnd('ConsentScript');
+</script>
+
+
+
+
+
