@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vitepress dev",
+    "dev:host": "vitepress dev --host",
+    "start": "npm run dev",
     "build": "vitepress build",
     "serve": "vitepress serve"
   },
