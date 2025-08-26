@@ -2,8 +2,8 @@ import { defineConfig } from 'vitepress'
 
 // https://vitepress.vuejs.org/config/app-configs
 
-export default {
-  base: '/docs/',
+export default defineConfig({
+  base: '/',
   title: 'My Docs',
   description: 'VitePress on GitHub Pages',
   themeConfig: {
@@ -32,4 +32,4 @@ export default {
     // editLink: { pattern: 'https://github.com/<you>/<repo>/edit/main/docs/:path' },
     // lastUpdated: true
   }
-}
+})
