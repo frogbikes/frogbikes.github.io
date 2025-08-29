@@ -1,13 +1,10 @@
-import { source } from '@/lib/source';
-import { createSearchAPI } from 'fumadocs-core/search/server';
+// This file intentionally left empty to prevent 404 errors
+// Search is disabled for static export compatibility
 
 export const dynamic = 'force-static';
+export const revalidate = false;
 
-export const { GET } = createSearchAPI('simple', {
-  indexes: source.getPages().map((page) => ({
-    title: page.data.title,
-    content: page.data.description ?? '',
-    id: page.url,
-    url: page.url,
-  })),
-});
+export function GET() {
+  return new Response('Search disabled', { status: 404 });
+}
+
