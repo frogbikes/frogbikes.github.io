@@ -10,6 +10,10 @@ const config = {
     unoptimized: true,
   },
   trailingSlash: true,
+  skipTrailingSlashRedirect: true,
+  experimental: {
+    appDir: true,
+  },
 };
 
 export default withMDX(config);
