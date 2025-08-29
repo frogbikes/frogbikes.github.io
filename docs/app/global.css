@@ -1,3 +1,37 @@
 @import 'tailwindcss';
-@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/vitepress.css';
 @import 'fumadocs-ui/css/preset.css';
+
+/* Hide Fumadocs search UI (navbar button and sidebar input) */
+/* Navbar search trigger */
+header button[aria-label="Search"],
+header [data-search-trigger],
+header [data-fd-search],
+header .fd-search,
+header .fd-nav-search,
+header nav button:has(kbd) {
+  display: none !important;
+}
+
+/* Sidebar search box */
+aside form[role="search"],
+aside input[type="search"],
+aside [data-fd-sidebar-search],
+aside .fd-sidebar-search,
+nav[aria-label="Sidebar"] form[role="search"],
+nav[aria-label="Sidebar"] input[type="search"] {
+  display: none !important;
+}
+
+/* Prevent leftover spacing where search would be */
+aside .fd-sidebar-search-slot,
+header .fd-nav-search-slot {
+  display: none !important;
+}
+
+/* Hide sidebar full-width search button */
+aside [data-search-full],
+nav[aria-label="Sidebar"] [data-search-full] {
+  display: none !important;
+}
+
